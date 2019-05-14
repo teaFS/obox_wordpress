@@ -1,5 +1,14 @@
 FROM php:7.3-cli-alpine3.9 AS obox_wordpress
 
+LABEL maintainer="Mateusz Piwek <Mateusz @ teaFS.org>" \
+      version="1.0 RC1" \
+      obox.framework="wordpress"
+
+ENV HTTP_EXP_PORT 8080
+ENV HTTP_EXP_ADDR "0.0.0.0:"$HTTP_EXP_PORT
+
+EXPOSE $HTTP_EXP_PORT/tcp
+
 ENV OBOX_DEBUG 1
 
 # -=== BEGIN WP-CLI settings
@@ -38,14 +47,19 @@ RUN apk add --no-cache $DEV_TOOLS && \
     [ $OBOX_DEBUG -ne 1 ] && apk del $DEV_TOOLS || echo "Obox in DEBUG MODE, leaving development tools unpurged"
 
 # install packeges requied for connecting to database
-RUN docker-php-ext-install mysqli pdo pdo_mysql
+RUN docker-php-ext-install mysqli pdo_mysql
 
-# install troubleshooting and info scripts: 
-RUN mkdir /var/www/html/_info
-COPY files/info.php /var/www/html/_info/index.php
-
-USER www-data:www-data
+# setup webserver files
 WORKDIR /var/www/html
 
+# install troubleshooting and info scripts: 
+RUN mkdir _info
+COPY files/info.php _info/index.php
 
+USER www-data:www-data
+
+# set naked Wordpress
+RUN wp core download --skip-content
+
+#TODO fix - port shall be set with enviromental variable
 CMD ["php", "-S", "0.0.0.0:8080", "-t", "."]
