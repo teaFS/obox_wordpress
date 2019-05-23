@@ -63,6 +63,10 @@ RUN apk add --no-cache $DEV0_PCKGS && \
 # install packeges requied for connecting to database
 RUN docker-php-ext-install mysqli pdo_mysql
 
+# if $MYSQL_HOST is not set, or set as 'localhost', or '127.0.0.1', or '::1' 
+# - install mariadb locally
+RUN [ $(grep -w $MYSQL_HOST </etc/hosts 2&>/dev/null | grep -w localhost | wc -l) == 0 ] && echo  || echo hit;
+
 # prepare entrypoint
 COPY files/entry.sh /
 RUN chmod +x /entry.sh && mkdir /opt/deploy

@@ -4,6 +4,7 @@ if [ ! -e "./wp-config.php" ]; then
 	echo "First run, deploying Wordpress"
 
 #	export WPCLI='wp'
+# check if database is ready
 
 	for SCRIPT in `find /opt/deploy/ -name *.sh | sort`; do [ -x $SCRIPT ] && WPCLI=wp $SCRIPT; done;
 fi
