@@ -6,7 +6,10 @@ if [ ! -e "./wp-config.php" ]; then
 #	export WPCLI='wp'
 # check if database is ready
 
-	for SCRIPT in `find /opt/deploy/ -name *.sh | sort`; do [ -x $SCRIPT ] && WPCLI=wp $SCRIPT; done;
+	for SCRIPT in `find /opt/deploy/ -name *.sh | sort`
+	do 
+		[ -x $SCRIPT ] && echo "Executing: $SCRIPT"; WPCLI=wp $SCRIPT;
+	done
 fi
 
 echo "Server is running at $HTTP_EXP_PORT, usefull tools can be found under \"/_info\" path"
