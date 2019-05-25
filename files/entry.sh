@@ -1,19 +1,16 @@
 #!/bin/sh
 
-# probe for MariaDB connection over TCP
-
-# If MariaDB is linked from other continer, probe network connection before launching server
-# if $MYSQL_HOST is not set, or set as 'localhost', or '127.0.0.1', or '::1' 
-mysql  -u root --wait --connect-timeout=1 --reconnect=TRUE -e '\q'
-
-[ $(grep -w $MYSQL_HOST </etc/hosts 2&>/dev/null | grep -w localhost | wc -l) == 0 ] && wait_for_net_maria;
+# Wait for mysql db first, so further code shall not fail :-)
+mysql -u root --wait --connect-timeout=16 --reconnect=TRUE -e '\q'
 
 if [ ! -e "./wp-config.php" ]; then 
-	echo "First run, deploying Wordpress"
+	echo "First launch, setting up obox_wordpress ..."
 
-#	export WPCLI='wp'
-# check if database is ready
+	DB_USER=$(id -un)
+	echo "Creating database: "
+    echo "CREATE DATABASE $DB_NAME; CREATE USER $DB_USER;" | mysql -u root
 
+	echo "Deploying Wordpress"
 	for SCRIPT in `find /opt/deploy/ -name *.sh | sort`
 	do 
 		[ -x $SCRIPT ] && echo "Executing: $SCRIPT"; WPCLI=wp $SCRIPT;
