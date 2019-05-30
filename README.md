@@ -2,10 +2,10 @@
 (Docker container compilation of a Wordpress web publishing software) meant for developers
 
 # apk list -I php*
+# database settings
 
-
-MYSQL_HOST: dbwp_setspc
-MYSQL_PWD: ${DB_PASSWORD}
+MYSQL_HOST
+MYSQL_ROOTPWD
 DB_NAME
 
 DOMAIN: localhost
