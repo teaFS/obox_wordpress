@@ -24,20 +24,22 @@ ENV OBOX_DEBUG 1
    # Base packages
    ENV BASE_PCKGS mariadb-client
    # development packages
-   ENV DEV0_PCKGS build-base autoconf php7-dev libzip-dev
+   ENV DEV0_PCKGS \
+      build-base automake \
+      php7-dev \
+      # requied by: zip ext
+      libzip-dev
    # helper packages
    ENV HELP_PCKGS less
-   #php7-zip php7-mysqli php7-pdo_mysql 
-   # mariadb-client less
 # END Alpine settings ===-
-
-# Let's have a fun to happen
 
 # TODO: longer timeout would be nice, check this out for an elegant solution: 
 # Step 22/23 : RUN wp core download --skip-content
 # ---> Running in 8362634fa619
 # Error: Failed to get url 'https://api.wordpress.org/core/version-check/1.7/?locale=en_US': cURL error 28: Operation timed out after 10000 milliseconds with 0 out of 0 bytes received.
 # https://unix.stackexchange.com/questions/148922/set-timeout-for-web-page-response-with-curl
+
+# Let's have a fun to happen
 
 # install WP-CLI
 RUN curl    --silent \
@@ -65,8 +67,8 @@ RUN docker-php-ext-install mysqli pdo_mysql
 
 # Test if $MYSQL_HOST is set to localhost', if so install mariaDB locally
 # If variable is empty, assume that database shall be setup locally
-RUN [ $(getent hosts $MYSQL_HOST | grep -e "\slocalhost$" | wc -l) == 0 ] || \
-      apk add --no-cache openrc mariadb && rc-update add mariadb default
+RUN [ $(getent hosts $MYSQL_HOST | grep -e "\slocalhost$" | wc -l) -eq '1' ] && apk add --no-cache openrc mariadb 
+#&& rc-update add mariadb default
 # /etc/init.d/mariadb setup
 # rc default
 
