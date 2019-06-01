@@ -65,12 +65,19 @@ RUN apk add --no-cache $DEV0_PCKGS && \
 # install packeges requied for connecting to database
 RUN docker-php-ext-install mysqli pdo_mysql
 
-# Test if $MYSQL_HOST is set to localhost', if so install mariaDB locally
-# If variable is empty, assume that database shall be setup locally
-RUN [ $(getent hosts $MYSQL_HOST | grep -e "\slocalhost$" | wc -l) -eq '1' ] && apk add --no-cache openrc mariadb 
-#&& rc-update add mariadb default
-# /etc/init.d/mariadb setup
-# rc default
+# Check if user wants local, or hosted elsware database
+
+# If $MYSQL_HOST is empty, default for local database
+RUN [ -z "$MYSQL_HOST" ] && OBOX_MYSQL_HOST="localhost" || OBOX_MYSQL_HOST=$MYSQL_HOST; \
+    $(getent hosts $OBOX_MYSQL_HOST | egrep -q "\slocalhost$") && \
+        # preparing for localsetup of mariaDB
+        apk add --no-cache mariadb sudo || \
+        # Just using remote host
+        true;
+
+# /usr/bin/mysqld_safe --datadir='/database'
+# mysql -u root
+#mysql_install_db --auth-root-authentication-method=socket --user=mysql --datadir=/database --skip-test-db
 
 # prepare entrypoint
 COPY files/entry.sh /
