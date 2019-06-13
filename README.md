@@ -4,7 +4,8 @@
 # apk list -I php*
 # database settings
 
-MYSQL_HOST
+
+MYSQL_HOST - empty, or set to localhost, install mariaDB locally, 
 MYSQL_ROOTPWD
 DB_NAME
 

@@ -67,13 +67,14 @@ RUN docker-php-ext-install mysqli pdo_mysql
 
 # Check if user wants local, or hosted elsware database
 
-# If $MYSQL_HOST is empty, default for local database
-RUN [ -z "$MYSQL_HOST" ] && OBOX_MYSQL_HOST="localhost" || OBOX_MYSQL_HOST=$MYSQL_HOST; \
-    $(getent hosts $OBOX_MYSQL_HOST | egrep -q "\slocalhost$") && \
-        # preparing for localsetup of mariaDB
-        apk add --no-cache mariadb sudo || \
-        # Just using remote host
-        true;
+# => moved to entry.sh
+## If $MYSQL_HOST is empty, default for local database
+#RUN [ -z "$MYSQL_HOST" ] && OBOX_MYSQL_HOST="localhost" || OBOX_MYSQL_HOST=$MYSQL_HOST; \
+#    $(getent hosts $OBOX_MYSQL_HOST | egrep -q "\slocalhost$") && \
+#        # preparing for localsetup of mariaDB
+#        apk add --no-cache mariadb sudo || \
+#        # Just using remote host
+#        true;
 
 # /usr/bin/mysqld_safe --datadir='/database'
 # mysql -u root
