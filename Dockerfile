@@ -7,6 +7,8 @@ LABEL maintainer="Mateusz Piwek <Mateusz @ teaFS.org>" \
 ENV HTTP_EXP_PORT 8080
 ENV HTTP_EXP_ADDR "0.0.0.0:"$HTTP_EXP_PORT
 
+ENV OBOX_LOCAL_DB_DATA_PATH "/database"
+
 EXPOSE $HTTP_EXP_PORT/tcp
 
 ENV OBOX_DEBUG 1
