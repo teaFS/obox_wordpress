@@ -10,7 +10,7 @@ MYSQL_HOST_STATUS=$(getent hosts $OBOX_MYSQL_HOST | egrep -q "\slocalhost$"; ech
 if [ $MYSQL_HOST_STATUS -eq '0' ]; then 
 	apk add --no-cache mariadb sudo
 
-	
+	# set random root password
 	DB_ROOT_PASS=$(dd if=/dev/urandom status=none bs=1024 count=1 | md5sum | cut -c -16)
 	DB_USER="mysql"
 	DB_PASS=""

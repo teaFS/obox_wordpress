@@ -2,12 +2,26 @@
 (Docker container compilation of a Wordpress web publishing software) meant for developers
 
 # apk list -I php*
-# database settings
+
+### Database settings
+
+#### MYSQL_HOST
+If MYSQL_HOST variable is not set, or set to indicate localhost, Wordpress will be configured for using local (in the same container) MySQL database.
+In order to use an external databse, MYSQL_HOST should indicate accesible host, 
+
+#### DB_USER
+Database user name if not set default 'mysql' is used
+
+#### DB_PASS
+Passowrd for given user name
+
+#### DB_NAME
+Name of the MySQL database to be used by Wordpres setup
 
 
-MYSQL_HOST - empty, or set to localhost, install mariaDB locally, 
-MYSQL_ROOTPWD
-DB_NAME
-
+### Wordpress settings
 DOMAIN: localhost
-WP_PLUGIN_LIST
+
+#### WP_PLUGIN_LIST
+
+

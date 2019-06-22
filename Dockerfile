@@ -1,7 +1,7 @@
 FROM php:7.3-cli-alpine3.9 AS obox_wordpress
 
 LABEL maintainer="Mateusz Piwek <Mateusz @ teaFS.org>" \
-      version="1.0 RC2" \
+      version="1.0 RC3" \
       obox.framework="wordpress"
 
 ENV HTTP_EXP_PORT 8080
@@ -42,6 +42,11 @@ ENV OBOX_DEBUG 1
 # https://unix.stackexchange.com/questions/148922/set-timeout-for-web-page-response-with-curl
 
 # Let's have a fun to happen
+
+# TODO: in ubuntu /etc/resolv.conf is set to localhost (dns is handled by local instance of dnsmasq)
+# it makes docker to set 8.8.8.8 and 8.8.4.4 in containers resovl.conf during build time
+# since firewall is strict, deployment within docker fails ...
+# therefore, do we really need dnsmasq in client machine? How to swith it off?
 
 # install WP-CLI
 RUN curl    --silent \
