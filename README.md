@@ -25,3 +25,7 @@ DOMAIN: localhost
 #### WP_PLUGIN_LIST
 
 
+### build arguments
+WPCLI_DOWNLOAD_URL
+http://bestlocalnetwork/ires/wp-cli.org/wp-cli.phar
+

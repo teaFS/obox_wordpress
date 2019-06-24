@@ -4,7 +4,7 @@ LABEL maintainer="Mateusz Piwek <Mateusz @ teaFS.org>" \
       version="1.0 RC3" \
       obox.framework="wordpress"
 
-ENV HTTP_EXP_PORT 8080
+ENV HTTP_EXP_PORT=8080
 ENV HTTP_EXP_ADDR "0.0.0.0:"$HTTP_EXP_PORT
 
 ENV OBOX_LOCAL_DB_DATA_PATH "/database"
@@ -14,9 +14,8 @@ EXPOSE $HTTP_EXP_PORT/tcp
 ENV OBOX_DEBUG 1
 
 # -=== BEGIN WP-CLI settings
-   # WP-CLI download URL, official dowload (1), and localnetwork source example (2): 
-   ENV WPCLI_URL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-   #ENV WPCLI_URL http://bestlocalnetwork/ires/wp-cli.org/wp-cli.phar
+   # WP-CLI download URL, default is an official URL: 
+   ARG WPCLI_DOWNLOAD_URL='https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar'
 
    # Full name (path and file name) of WP-CLI executable: 
    ENV WPCLI_NAME /usr/local/bin/wp
@@ -52,7 +51,7 @@ ENV OBOX_DEBUG 1
 RUN curl    --silent \
             --connect-timeout 60 \
             --output $WPCLI_NAME \
-            $WPCLI_URL && \
+            $WPCLI_DOWNLOAD_URL && \
     chmod +x $WPCLI_NAME
 
 # install base packages
