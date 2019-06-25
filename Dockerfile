@@ -23,7 +23,7 @@ ENV OBOX_DEBUG 1
 
 # -=== BEGIN Alpine settings
    # Base packages
-   ENV BASE_PCKGS mariadb-client
+   ENV BASE_PCKGS mariadb-client sudo
    # development packages
    ENV DEV0_PCKGS \
       build-base automake \
@@ -85,6 +85,8 @@ RUN docker-php-ext-install mysqli pdo_mysql
 # /usr/bin/mysqld_safe --datadir='/database'
 # mysql -u root
 #mysql_install_db --auth-root-authentication-method=socket --user=mysql --datadir=/database --skip-test-db
+
+ADD --chown=www-data:www-data files/sudo_finalize_setup /etc/sudoers.d/
 
 # prepare entrypoint
 COPY files/entry.sh /
