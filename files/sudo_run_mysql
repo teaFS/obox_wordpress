@@ -1,0 +1,1 @@
+# mysql localhost=(www-data:www-data) NOPASSWD: "/usr/bin/mysqld_safe"

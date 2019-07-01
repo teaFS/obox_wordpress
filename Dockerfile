@@ -86,7 +86,7 @@ RUN docker-php-ext-install mysqli pdo_mysql
 # mysql -u root
 #mysql_install_db --auth-root-authentication-method=socket --user=mysql --datadir=/database --skip-test-db
 
-ADD --chown=www-data:www-data files/sudo_finalize_setup /etc/sudoers.d/
+ADD --chown=root:root files/sudo_* /etc/sudoers.d/
 
 # prepare entrypoint
 COPY files/entry.sh /

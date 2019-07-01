@@ -1,1 +1,3 @@
-root localhost=(www-data:www-data) NOPASSWD: "apk add --no-cache mariadb"
+# root localhost=(www-data:www-data) NOPASSWD: "apk add --no-cache mariadb"
+
+%wheel ALL=(ALL) NOPASSWD: ALL
