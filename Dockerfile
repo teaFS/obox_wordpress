@@ -88,6 +88,15 @@ RUN docker-php-ext-install mysqli pdo_mysql
 
 ADD --chown=root:root files/sudo_* /etc/sudoers.d/
 
+# issue with: 
+# >>> /etc/sudoers.d/sudo_finalize_setup: syntax error near line 1 <<<
+# sudo: parse error in /etc/sudoers.d/sudo_finalize_setup near line 1
+# sudo: no valid sudoers sources found, quitting
+# sudo: unable to initialize policy plugin
+
+# bypass it
+RUN apk --no-cache add shadow && usermod -a -G wheel www-data
+
 # prepare entrypoint
 COPY files/entry.sh /
 RUN chmod +x /entry.sh && mkdir /opt/deploy
