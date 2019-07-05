@@ -11,19 +11,24 @@ set -xe
 # 
 # 
 MYSQL_HOST_STATUS=$(getent hosts $OBOX_MYSQL_HOST | egrep -q "\slocalhost$"; echo $?)
+# Regular launch is not a first launchl - first continer's launch shall 
+# REGULAR_LAUNCH env is empty, following runs shall hold no-zero 
+# value
+REGULAR_LAUNCH=$([ -e "./wp-config.php" ] && echo 'y')
 
 # install mariaDB locally
-if [ $MYSQL_HOST_STATUS -eq '0' ]; then 
-	apk add --no-cache mariadb
+if [ $MYSQL_HOST_STATUS -eq '0' ] && [ REGULAR_LAUNCH -eq '0' ]; then 
+	sudo apk add --no-cache mariadb
 
 	# set random root password
 	DB_ROOT_PASS=$(dd if=/dev/urandom status=none bs=1024 count=1 | md5sum | cut -c -16)
 	DB_USER="mysql"
 	DB_PASS=""
 	
-	mysql_install_db \ 
-		--auth-root-authentication-method=socket \ 
-		--skip-test-db \ 
+	sudo /usr/bin/mysql_secure_installation 
+	sudo mysql_install_db \
+		--auth-root-authentication-method=socket \
+		--skip-test-db \
 		--datadir=${OBOX_LOCAL_DB_DATA_PATH}
 fi
 
@@ -40,7 +45,7 @@ mysql -u root --wait --connect-timeout=16 --reconnect=TRUE -e '\q'
 # run setup scripts
 if [ ! -e "./wp-config.php" ]; then 
 
-	echo "First launch, setting up obox_wordpress ..."
+	echo "Setting up obox_wordpress ..."
 
 	DB_USER=$(id -un)
 

@@ -1,16 +1,16 @@
 # Obox_wordpress
 (Docker image suited for Wordpress) meant for developers
 
-Wordpres is internet's number one web publishing software originally developed as a blogging platform, but nowadays being advanced framework for building a web services.
+Wordpres is internet's number one web publishing software originally developed as a blogging platform in 2003, but nowadays being advanced framework for building a web services.
 
-The Obox_wordpress has been developed to automatize Wordpress deployment, backup, migration and more. 
+The Obox_wordpress has been developed to automatize Wordpress deployment, backup, migration and more.
 It is Alpine Linux based Docker image holding Wordpres with WP-CLI tool and set of helper scripts. It can be launched as: 
 * independent container - which uses local MySQL database
 * linked to an external MySQL database
 
 ## Quick Wordpress setup
 
-docker create 
+docker run --name "My WP Instance" -d entrproc/obox_wordpress
 
 ### Database settings
 
