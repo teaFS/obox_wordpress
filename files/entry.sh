@@ -14,10 +14,10 @@ MYSQL_HOST_STATUS=$(getent hosts $OBOX_MYSQL_HOST | egrep -q "\slocalhost$"; ech
 # Regular launch is not a first launchl - first continer's launch shall 
 # REGULAR_LAUNCH env is empty, following runs shall hold no-zero 
 # value
-REGULAR_LAUNCH=$([ -e "./wp-config.php" ] && echo 'y')
+REGULAR_LAUNCH=$([ -e "./wp-config.php" ] && echo 'y' || true)
 
-# install mariaDB locally
-if [ $MYSQL_HOST_STATUS -eq '0' ] && [ REGULAR_LAUNCH -eq '0' ]; then 
+# install mariaDB locally - if it's not a regular launch
+if [ $MYSQL_HOST_STATUS -eq '0' ] && [ -z $REGULAR_LAUNCH ]; then 
 	sudo apk add --no-cache mariadb
 
 	# set random root password
@@ -25,17 +25,21 @@ if [ $MYSQL_HOST_STATUS -eq '0' ] && [ REGULAR_LAUNCH -eq '0' ]; then
 	DB_USER="mysql"
 	DB_PASS=""
 	
-	sudo /usr/bin/mysql_secure_installation 
-	sudo mysql_install_db \
-		--auth-root-authentication-method=socket \
-		--skip-test-db \
-		--datadir=${OBOX_LOCAL_DB_DATA_PATH}
+	#sudo /usr/bin/mysql_secure_installation 
+	#sudo mysql_install_db \
+	#	--auth-root-authentication-method=socket \
+	#	--skip-test-db \
+	#	--datadir=${OBOX_LOCAL_DB_DATA_PATH}
 fi
 
+# ------ tested until this line -----
+exit 1
 
-# start local mariaDB host
-[ -x /etc/init.d/mariadb ] && cd '/usr' ; /usr/bin/mysqld_safe --datadir=${OBOX_LOCAL_DB_DATA_PATH} || true;
-
+# start local mariaDB host - if continer is configured for a local database
+if [ $MYSQL_HOST_STATUS -eq '0' ]; then 
+	
+	sudo -u mysql cd '/usr'; /usr/bin/mysqld_safe --datadir=${OBOX_LOCAL_DB_DATA_PATH}
+fi
 
 # Wait for mysql db first, so further code shall not fail :-)
 mysql -u root --wait --connect-timeout=16 --reconnect=TRUE -e '\q'
@@ -43,7 +47,7 @@ mysql -u root --wait --connect-timeout=16 --reconnect=TRUE -e '\q'
 
 # wp-config.php is missing, assume it's a first launch, therefore 
 # run setup scripts
-if [ ! -e "./wp-config.php" ]; then 
+if [ REGULAR_LAUNCH -z ]; then 
 
 	echo "Setting up obox_wordpress ..."
 
