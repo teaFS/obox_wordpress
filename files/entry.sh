@@ -28,6 +28,8 @@ if [ $MYSQL_HOST_STATUS -eq '0' ] && [ -z $REGULAR_LAUNCH ]; then
 	#sudo apk add --no-cache expect
 	#sudo /usr/bin/mysql_secure_installation 
 	# sudo apk del expect
+	# https://stackoverflow.com/questions/24270733/automate-mysql-secure-installation-with-echo-command-via-a-shell-script
+	# https://gist.github.com/Mins/4602864
 
 	sudo mysql_install_db \
 		--auth-root-authentication-method=socket \
