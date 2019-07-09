@@ -24,25 +24,35 @@ if [ $MYSQL_HOST_STATUS -eq '0' ] && [ -z $REGULAR_LAUNCH ]; then
 	DB_ROOT_PASS=$(dd if=/dev/urandom status=none bs=1024 count=1 | md5sum | cut -c -16)
 	DB_USER="mysql"
 	DB_PASS=""
-	
+
+	#sudo apk add --no-cache expect
 	#sudo /usr/bin/mysql_secure_installation 
-	#sudo mysql_install_db \
-	#	--auth-root-authentication-method=socket \
-	#	--skip-test-db \
-	#	--datadir=${OBOX_LOCAL_DB_DATA_PATH}
+	# sudo apk del expect
+
+	sudo mysql_install_db \
+		--auth-root-authentication-method=socket \
+		--skip-test-db \
+		--user=mysql \
+		--datadir=${OBOX_LOCAL_DB_DATA_PATH} \
+		--datadir=${OBOX_LOCAL_DB_DATA_PATH}/data
 fi
 
 # ------ tested until this line -----
 exit 1
 
+#You can test the MariaDB daemon with mysql-test-run.pl
+#cd '/usr/mysql-test' ; perl mysql-test-run.pl
+
 # start local mariaDB host - if continer is configured for a local database
 if [ $MYSQL_HOST_STATUS -eq '0' ]; then 
-	
-	sudo -u mysql cd '/usr'; /usr/bin/mysqld_safe --datadir=${OBOX_LOCAL_DB_DATA_PATH}
+	# launch local mysql server
+	cd '/usr' ; /usr/bin/mysqld_safe --nowatch --datadir=${OBOX_LOCAL_DB_DATA_PATH}/data
+else
+	# Wait for mysql server to ensure that database is up and available
+	mysql -u root --wait --connect-timeout=16 --reconnect=TRUE -e '\q'
 fi
 
-# Wait for mysql db first, so further code shall not fail :-)
-mysql -u root --wait --connect-timeout=16 --reconnect=TRUE -e '\q'
+
 
 
 # wp-config.php is missing, assume it's a first launch, therefore 
