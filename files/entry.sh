@@ -8,7 +8,7 @@ set -xe
 
 # MYSQL_HOST_STATUS variable indicates: 
 # if '0' - MySQL is set to localhost
-# 
+# if '1' - MySQL is set at an external server
 # 
 MYSQL_HOST_STATUS=$(getent hosts $OBOX_MYSQL_HOST | egrep -q "\slocalhost$"; echo $?)
 # Regular launch is not a first launchl - first continer's launch shall 
@@ -22,7 +22,6 @@ if [ $MYSQL_HOST_STATUS -eq '0' ] && [ -z $REGULAR_LAUNCH ]; then
 
 	# set random root password
 	DB_ROOT_PASS=$(dd if=/dev/urandom status=none bs=1024 count=1 | md5sum | cut -c -16)
-	DB_USER="mysql"
 	DB_PASS=""
 
 	#sudo apk add --no-cache expect
@@ -39,8 +38,6 @@ if [ $MYSQL_HOST_STATUS -eq '0' ] && [ -z $REGULAR_LAUNCH ]; then
 		--datadir=${OBOX_LOCAL_DB_DATA_PATH}/data
 fi
 
-# ------ tested until this line -----
-exit 1
 
 #You can test the MariaDB daemon with mysql-test-run.pl
 #cd '/usr/mysql-test' ; perl mysql-test-run.pl
@@ -48,26 +45,36 @@ exit 1
 # start local mariaDB host - if continer is configured for a local database
 if [ $MYSQL_HOST_STATUS -eq '0' ]; then 
 	# launch local mysql server
-	cd '/usr' ; /usr/bin/mysqld_safe --nowatch --datadir=${OBOX_LOCAL_DB_DATA_PATH}/data
+	cd '/usr' ; \
+	sudo /usr/bin/mysqld_safe \
+			--nowatch \
+			--datadir=${OBOX_LOCAL_DB_DATA_PATH}/data
 else
 	# Wait for mysql server to ensure that database is up and available
-	mysql -u root --wait --connect-timeout=16 --reconnect=TRUE -e '\q'
+	mysql -u root \
+		--wait \
+		--connect-timeout=16 \
+		--reconnect=TRUE \
+		-e '\q'
 fi
 
-
-
+# ------ tested until this line -----
+exit 1
 
 # wp-config.php is missing, assume it's a first launch, therefore 
 # run setup scripts
-if [ REGULAR_LAUNCH -z ]; then 
+if [ -z $REGULAR_LAUNCH ]; then 
 
 	echo "Setting up obox_wordpress ..."
 
 	DB_USER=$(id -un)
 
 	# Create MySQL database for wordpress
+	# if database name is not provided, set default value
+	[ -z $DB_NAME ] && DB_NAME = 'wp' || true;
+
 	echo "Creating database: "
-    echo "CREATE DATABASE $DB_NAME; CREATE USER $DB_USER;" | mysql -u root
+    sudo mysql -e "CREATE DATABASE $DB_NAME; CREATE USER $DB_USER;"
 
 	# waive root privilages
 
