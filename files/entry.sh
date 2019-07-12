@@ -34,8 +34,7 @@ if [ $MYSQL_HOST_STATUS -eq '0' ] && [ -z $REGULAR_LAUNCH ]; then
 		--auth-root-authentication-method=socket \
 		--skip-test-db \
 		--user=mysql \
-		--datadir=${OBOX_LOCAL_DB_DATA_PATH} \
-		--datadir=${OBOX_LOCAL_DB_DATA_PATH}/data
+		--datadir='${OBOX_LOCAL_DB_DATA_PATH}/data'
 fi
 
 
@@ -58,31 +57,28 @@ else
 		-e '\q'
 fi
 
-# ------ tested until this line -----
-exit 1
-
 # wp-config.php is missing, assume it's a first launch, therefore 
 # run setup scripts
 if [ -z $REGULAR_LAUNCH ]; then 
-
 	echo "Setting up obox_wordpress ..."
 
 	DB_USER=$(id -un)
+	DB_USER_PASS=$(dd if=/dev/urandom status=none bs=1024 count=1 | md5sum | cut -c -12)
 
 	# Create MySQL database for wordpress
 	# if database name is not provided, set default value
-	[ -z $DB_NAME ] && DB_NAME = 'wp' || true;
+	[ -z $DB_NAME ] && DB_NAME='wp' || true;
 
 	echo "Creating database: "
-    sudo mysql -e "CREATE DATABASE $DB_NAME; CREATE USER $DB_USER;"
+    sudo mysql -e "CREATE DATABASE $DB_NAME; CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$DB_USER_PASS'; GRANT ALL PRIVILEGES ON *.$DB_NAME TO '$DB_USER'@'localhost'; FLUSH PRIVILEGES;"
 
 	# waive root privilages
 
 	echo "Deploying Wordpress"
-	for SCRIPT in `find /opt/deploy/ -name *.sh | sort`
-	do 
-		[ -x $SCRIPT ] && echo "Executing: $SCRIPT"; WPCLI=wp $SCRIPT;
-	done
+#	for SCRIPT in `find /opt/deploy/ -name *.sh | sort`
+#	do 
+#		[ -x $SCRIPT ] && echo "Executing: $SCRIPT"; WPCLI=wp $SCRIPT;
+#	done
 fi
 
 echo "Server is running at $HTTP_EXP_PORT, usefull tools can be found under \"/_info\" path"
