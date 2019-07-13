@@ -34,7 +34,7 @@ if [ $MYSQL_HOST_STATUS -eq '0' ] && [ -z $REGULAR_LAUNCH ]; then
 		--auth-root-authentication-method=socket \
 		--skip-test-db \
 		--user=mysql \
-		--datadir='${OBOX_LOCAL_DB_DATA_PATH}/data'
+		--datadir=$OBOX_LOCAL_DB_DATA_PATH/data
 fi
 
 
@@ -47,18 +47,20 @@ if [ $MYSQL_HOST_STATUS -eq '0' ]; then
 	cd '/usr' ; \
 	sudo /usr/bin/mysqld_safe \
 			--nowatch \
-			--datadir=${OBOX_LOCAL_DB_DATA_PATH}/data
-else
-	# Wait for mysql server to ensure that database is up and available
-	mysql -u root \
+			--datadir=$OBOX_LOCAL_DB_DATA_PATH/data
+fi
+#else
+
+# Wait for mysql server to ensure that database is up and available
+sudo mysql -u root \
 		--wait \
 		--connect-timeout=16 \
 		--reconnect=TRUE \
 		-e '\q'
-fi
 
-# wp-config.php is missing, assume it's a first launch, therefore 
-# run setup scripts
+#fi
+
+# If it's not a regular launch, run database and wordpres setup
 if [ -z $REGULAR_LAUNCH ]; then 
 	echo "Setting up obox_wordpress ..."
 
@@ -70,15 +72,24 @@ if [ -z $REGULAR_LAUNCH ]; then
 	[ -z $DB_NAME ] && DB_NAME='wp' || true;
 
 	echo "Creating database: "
-    sudo mysql -e "CREATE DATABASE $DB_NAME; CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$DB_USER_PASS'; GRANT ALL PRIVILEGES ON *.$DB_NAME TO '$DB_USER'@'localhost'; FLUSH PRIVILEGES;"
-
-	# waive root privilages
+	sleep 10
+    echo 	"CREATE DATABASE $DB_NAME;" \
+			"CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$DB_USER_PASS';" \
+			"GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost';" \
+			"FLUSH PRIVILEGES;" | sudo mysql
 
 	echo "Deploying Wordpress"
-#	for SCRIPT in `find /opt/deploy/ -name *.sh | sort`
-#	do 
-#		[ -x $SCRIPT ] && echo "Executing: $SCRIPT"; WPCLI=wp $SCRIPT;
-#	done
+	wp config create \
+		--dbname=$DB_NAME \
+		--dbuser=$DB_USER \
+		--dbpass=$DB_USER_PASS \
+		--dbhost=$MYSQL_HOST \
+		--dbprefix=_
+	
+	for SCRIPT in `find /opt/deploy/ -name *.sh | sort`
+	do 
+		[ -x $SCRIPT ] && echo "Executing: $SCRIPT"; WPCLI=wp $SCRIPT;
+	done
 fi
 
 echo "Server is running at $HTTP_EXP_PORT, usefull tools can be found under \"/_info\" path"
