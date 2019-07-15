@@ -52,14 +52,23 @@ fi
 #else
 
 # Wait for mysql server to ensure that database is up and available
-sudo mysql -u root \
-		--wait \
-		--connect-timeout=16 \
-		--reconnect=TRUE \
-		-e '\q'
+echo "Testing DB connection ..."
+while true 
+do
+	for SLEEP_TIME in 2 5 10 
+	do
+		sleep $SLEEP_TIME
+		echo -n "    "
 
-#fi
-
+		sudo mysql -u root \
+			--wait \
+			--connect-timeout=16 \
+			--reconnect=TRUE \
+			-e '\q' && break 2;
+	
+	done
+	echo "$? - FAILED, exit script"
+done
 # If it's not a regular launch, run database and wordpres setup
 if [ -z $REGULAR_LAUNCH ]; then 
 	echo "Setting up obox_wordpress ..."
@@ -72,7 +81,7 @@ if [ -z $REGULAR_LAUNCH ]; then
 	[ -z $DB_NAME ] && DB_NAME='wp' || true;
 
 	echo "Creating database: "
-	sleep 10
+	
     echo 	"CREATE DATABASE $DB_NAME;" \
 			"CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$DB_USER_PASS';" \
 			"GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost';" \
@@ -83,7 +92,7 @@ if [ -z $REGULAR_LAUNCH ]; then
 		--dbname=$DB_NAME \
 		--dbuser=$DB_USER \
 		--dbpass=$DB_USER_PASS \
-		--dbhost=$MYSQL_HOST \
+		--dbhost=$OBOX_MYSQL_HOST \
 		--dbprefix=_
 	
 	for SCRIPT in `find /opt/deploy/ -name *.sh | sort`
