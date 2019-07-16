@@ -53,6 +53,11 @@ fi
 
 # Wait for mysql server to ensure that database is up and available
 echo "Testing DB connection ..."
+
+# quasi-infinite loop - if DB connection is established, leave 
+# double loop with break 2, otherwise, after all trials, 
+# exit entire scrip with 'exit 1' - right at the end of the first 
+# loop
 while true 
 do
 	for SLEEP_TIME in 2 5 10 
@@ -67,8 +72,12 @@ do
 			-e '\q' && break 2;
 	
 	done
-	echo "$? - FAILED, exit script"
+
+	echo "FAILED, could not connect to database at $OBOX_MYSQL_HOST"
+	exit 1
 done
+echo "DB connection tested"
+
 # If it's not a regular launch, run database and wordpres setup
 if [ -z $REGULAR_LAUNCH ]; then 
 	echo "Setting up obox_wordpress ..."
