@@ -43,13 +43,11 @@ fi
 
 # start local mariaDB host - if continer is configured for a local database
 if [ $MYSQL_HOST_STATUS -eq '0' ]; then 
-	# launch local mysql server
-	cd '/usr' ; \
-	sudo /usr/bin/mysqld_safe \
-			--nowatch \
-			--datadir=$OBOX_LOCAL_DB_DATA_PATH/data
+	# launch local mysql server - run in a subshell to keep 
+	# script in a current work directory (don't cd '/usr'; )
+	MYSQL_LAUNCH_MSG=$(cd '/usr' ; sudo /usr/bin/mysqld_safe --nowatch --datadir=$OBOX_LOCAL_DB_DATA_PATH/data)
+	echo $MYSQL_LAUNCH_MSG
 fi
-#else
 
 # Wait for mysql server to ensure that database is up and available
 echo "Testing DB connection ..."
@@ -97,6 +95,7 @@ if [ -z $REGULAR_LAUNCH ]; then
 			"FLUSH PRIVILEGES;" | sudo mysql
 
 	echo "Deploying Wordpress"
+	pwd
 	wp config create \
 		--dbname=$DB_NAME \
 		--dbuser=$DB_USER \
