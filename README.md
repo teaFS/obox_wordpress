@@ -11,6 +11,17 @@ It is Alpine Linux based Docker image holding Wordpres with WP-CLI tool and set 
 ## Quick Wordpress setup
 
 docker run --name "My WP Instance" -d entrproc/obox_wordpress
+Default setup
+
+-e 
+
+### Wordpress settings
+
+#### WP_THEME_NAME
+#### WP_CHILD_THEME_NAME
+
+#### WP_PLUGIN_LIST
+
 
 ### Database settings
 
@@ -28,10 +39,6 @@ Passowrd for given user name
 Name of the MySQL database to be used by Wordpres setup
 
 
-### Wordpress settings
-DOMAIN: localhost
-
-#### WP_PLUGIN_LIST
 
 
 ### build arguments

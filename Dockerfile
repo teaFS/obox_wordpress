@@ -99,7 +99,10 @@ RUN apk --no-cache add shadow && usermod -a -G wheel www-data
 
 # prepare entrypoint
 COPY files/entry.sh /
-RUN chmod +x /entry.sh && mkdir /opt/deploy
+RUN chmod +x /entry.sh
+
+ADD files/deploy*.sh /opt/deploy/
+RUN chmod +x /opt/deploy/deploy*.sh
 
 # setup webserver files
 WORKDIR /var/www/html
