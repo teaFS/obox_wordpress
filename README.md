@@ -18,10 +18,13 @@ Default setup
 ### Wordpress settings
 
 #### WP_THEME_NAME
-#### WP_CHILD_THEME_NAME
+#### WP_LOCAL_THEME_NAME
 
 #### WP_PLUGIN_LIST
 
+### Site settings
+SITETITLE
+TAGLINE
 
 ### Database settings
 

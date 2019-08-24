@@ -11,6 +11,7 @@ ENV OBOX_LOCAL_DB_DATA_PATH "/database"
 
 EXPOSE $HTTP_EXP_PORT/tcp
 
+ENV SITETITLE "Obox_wordpress setup"
 ENV OBOX_DEBUG 1
 
 # -=== BEGIN WP-CLI settings
