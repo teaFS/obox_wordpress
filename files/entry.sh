@@ -6,6 +6,9 @@ set -xe
 # else copy settings from $MYSQL_HOST
 [ -z "$MYSQL_HOST" ] && OBOX_MYSQL_HOST="localhost" || OBOX_MYSQL_HOST=$MYSQL_HOST;
 
+# set defauld mysql port: 
+OBOX_MYSQL_PORT=3306
+
 # MYSQL_HOST_STATUS variable indicates: 
 # if '0' - MySQL is set to localhost
 # if '1' - MySQL is set at an external server
@@ -23,6 +26,9 @@ if [ $MYSQL_HOST_STATUS -eq '0' ] && [ -z $REGULAR_LAUNCH ]; then
 	# set random root password
 	DB_ROOT_PASS=$(dd if=/dev/urandom status=none bs=1024 count=1 | md5sum | cut -c -16)
 	DB_PASS=""
+
+	# this is local mysql instance accesiable over UNIX socket only
+	OBOX_MYSQL_PORT="/run/mysqld/mysqld.sock"
 
 	#sudo apk add --no-cache expect
 	#sudo /usr/bin/mysql_secure_installation 
@@ -100,7 +106,7 @@ if [ -z $REGULAR_LAUNCH ]; then
 		--dbname=$DB_NAME \
 		--dbuser=$DB_USER \
 		--dbpass=$DB_USER_PASS \
-		--dbhost=$OBOX_MYSQL_HOST \
+		--dbhost=$OBOX_MYSQL_HOST:$OBOX_MYSQL_PORT \
 		--dbprefix=_
 	
 	for SCRIPT in `find /opt/deploy/ -name *.sh | sort`
