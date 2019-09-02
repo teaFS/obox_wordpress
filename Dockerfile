@@ -102,8 +102,8 @@ RUN apk --no-cache add shadow && usermod -a -G wheel www-data
 COPY files/entry.sh /
 RUN chmod +x /entry.sh
 
-ADD files/deploy*.sh /opt/deploy/
-RUN chmod +x /opt/deploy/deploy*.sh
+ADD files/deploy_*.sh /opt/obox/
+RUN chmod +x /opt/obox/deploy_*.sh
 
 # setup webserver files
 WORKDIR /var/www/html

@@ -22,6 +22,9 @@ DOMAIN="localhost"
 APP_PATH=""
 URL=""
 
+ADMIN_USER="admin"
+ADMIN_EMAIL="admin@example.com"
+
 MISSING_ENV=0
 
 if [ -z "$DOMAIN" ]; then 
