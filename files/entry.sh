@@ -109,18 +109,24 @@ if [ -z $REGULAR_LAUNCH ]; then
 		--dbhost=$OBOX_MYSQL_HOST:$OBOX_MYSQL_PORT \
 		--dbprefix=_
 	
-	for SCRIPT in `find /opt/obox/ -name deploy_*.sh | sort`
+	for SCRIPT in $(find /opt/obox/ -name deploy_*.sh | sort)
 	do 
 		[ -x $SCRIPT ] && echo "Executing: $SCRIPT"; WPCLI=wp $SCRIPT;
 	done
 fi
 
-echo "Server is running at $HTTP_EXP_PORT, usefull tools can be found under \"/_info\" path"
 echo "************************* ..."
 echo "* Login credentials: "
-echo "* ====/===="
+for LOGIN in $(wp user list --role=administrator --field=login | sort)
+do
+	LOGIN_PASS=$(dd if=/dev/urandom status=none bs=1024 count=1 | md5sum | cut -c -8)
+
+	wp user update $LOGIN --user_pass=$LOGIN_PASS --skip-email
+	echo "$LOGIN/$LOGIN_PASS"
+done
 echo "************************* ..."
 
+echo "Server is running at $HTTP_EXP_PORT, usefull tools can be found under \"/_info\" path"
 php -S $HTTP_EXP_ADDR -t .
 
 exit 0
