@@ -10,10 +10,15 @@ It is Alpine Linux based Docker image holding Wordpres with WP-CLI tool and set 
 
 ## Quick Wordpress setup
 
+```
 docker run --name "My WP Instance" -d entrproc/obox_wordpress
+```
+
 Default setup
 
--e 
+```
+-e WP_THEME_NAME=
+```
 
 ### Wordpress settings
 
