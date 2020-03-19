@@ -11,16 +11,26 @@ OBOX_MYSQL_PORT=3306
 
 # MYSQL_HOST_STATUS variable indicates: 
 # if '0' - MySQL is set to localhost
-# if '1' - MySQL is set at an external server
+# if '1' - MySQL is pointing an external server
 # 
 MYSQL_HOST_STATUS=$(getent hosts $OBOX_MYSQL_HOST | egrep -q "\slocalhost$"; echo $?)
-# Regular launch is not a first launchl - first continer's launch shall 
-# REGULAR_LAUNCH env is empty, following runs shall hold no-zero 
-# value
+
+# Variable determinares 'LAUNCH_SCHEMA': 
+# 'r' - (r)egular launch: system has been configured, just launch requied 
+#                         applications
+# 'f' - (f)irst launch: configure Wordpress according to settings passed in 
+#                       configuration variables & launch requied applications 
+#                       after all
+# 
 REGULAR_LAUNCH=$([ -e "./wp-config.php" ] && echo 'y' || true)
+LAUNCH_SCHEMA=$([ -e "./wp-config.php" ] && echo 'r' || echo 'f')
+
+first_launch () {
+	return $LAUNCH_SCHEMA -eq 'f'
+}
 
 # install mariaDB locally - if it's not a regular launch
-if [ $MYSQL_HOST_STATUS -eq '0' ] && [ -z $REGULAR_LAUNCH ]; then 
+if [ $MYSQL_HOST_STATUS -eq '0' ] && first_launch; then 
 	sudo apk add --no-cache mariadb
 
 	# set random root password
@@ -83,7 +93,7 @@ done
 echo "DB connection tested"
 
 # If it's not a regular launch, run database and wordpres setup
-if [ -z $REGULAR_LAUNCH ]; then 
+if first_launch; then 
 	echo "Setting up obox_wordpress ..."
 
 	DB_USER=$(id -un)
