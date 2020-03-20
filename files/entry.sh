@@ -22,15 +22,14 @@ MYSQL_HOST_STATUS=$(getent hosts $OBOX_MYSQL_HOST | egrep -q "\slocalhost$"; ech
 #                       configuration variables & launch requied applications 
 #                       after all
 # 
-REGULAR_LAUNCH=$([ -e "./wp-config.php" ] && echo 'y' || true)
 LAUNCH_SCHEMA=$([ -e "./wp-config.php" ] && echo 'r' || echo 'f')
 
-first_launch () {
-	return $LAUNCH_SCHEMA -eq 'f'
-}
+#first_launch () {
+#	return $LAUNCH_SCHEMA -eq 'f'
+#}
 
-# install mariaDB locally - if it's not a regular launch
-if [ $MYSQL_HOST_STATUS -eq '0' ] && first_launch; then 
+# If database is set to be local, install necessary packeges
+if [ $MYSQL_HOST_STATUS -eq '0' ] && [ $LAUNCH_SCHEMA == 'f' ]; then 
 	sudo apk add --no-cache mariadb
 
 	# set random root password
@@ -93,7 +92,7 @@ done
 echo "DB connection tested"
 
 # If it's not a regular launch, run database and wordpres setup
-if first_launch; then 
+if [ $LAUNCH_SCHEMA == 'f' ]; then 
 	echo "Setting up obox_wordpress ..."
 
 	DB_USER=$(id -un)
