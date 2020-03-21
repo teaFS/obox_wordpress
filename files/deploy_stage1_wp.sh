@@ -1,15 +1,14 @@
 #!/bin/sh
 set -e
 
-# SetenaSpace shop wp_cli deployment script
-# 
-# 
 
-env
-
-ls /var/www/theme/theme.env && \
+[ -f /var/www/theme/theme.env ] && \
 	. /var/www/theme/theme.env || \
 	echo "Using default theme settings"
+
+#ls /var/www/theme/theme.env && \
+#	. /var/www/theme/theme.env || \
+#	echo "Using default theme settings"
 
 
 if [ -z "$WPCLI" ]; then 

@@ -110,7 +110,7 @@ if [ $LAUNCH_SCHEMA == 'f' ]; then
 			"FLUSH PRIVILEGES;" | sudo mysql
 
 	echo "Deploying Wordpress"
-	pwd
+	
 	wp config create \
 		--dbname=$DB_NAME \
 		--dbuser=$DB_USER \
@@ -120,6 +120,7 @@ if [ $LAUNCH_SCHEMA == 'f' ]; then
 	
 	for SCRIPT in $(find /opt/obox/ -name deploy_*.sh | sort)
 	do 
+		env
 		[ -x $SCRIPT ] && echo "Executing: $SCRIPT"; WPCLI=wp $SCRIPT;
 	done
 fi
