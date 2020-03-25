@@ -69,26 +69,30 @@ if [ -n "$TAGLINE" ]; then
 	$WPCLI option update blogdescription "$TAGLINE"
 fi
 
-THEME_TO_ACTIVATE=""
+#THEME_TO_ACTIVATE=""
 
 # Prepare and install theme
-if [ -n "$THEME_NAME" ]; then
-	$WPCLI theme install $THEME_NAME
-	THEME_TO_ACTIVATE="$THEME_NAME"
+if [ -n "$WP_THEME_LIST" ]; then
+	$WPCLI theme install $WP_THEME_LIST
+	#THEME_TO_ACTIVATE="$THEME_NAME"
 fi
 
-if [ -n "$LOCAL_THEME_NAME" ]; then 
-	ln -s /var/www/theme/src ./wp-content/themes/$LOCAL_THEME_NAME
-	THEME_TO_ACTIVATE="$LOCAL_THEME_NAME"
-fi
+#if [ -n "$LOCAL_THEME_NAME" ]; then 
+#	ln -s /var/www/theme/src ./wp-content/themes/$LOCAL_THEME_NAME
+#	THEME_TO_ACTIVATE="$LOCAL_THEME_NAME"
+#fi
 
-if [ -n "$THEME_TO_ACTIVATE" ]; then 
-	$WPCLI theme activate $THEME_TO_ACTIVATE
+if [ -n $WP_THEME_ACTIVATE ]; then 
+	$WPCLI theme activate $WP_THEME_ACTIVATE
 fi
 
 # install plugins
 if [ -n "$WP_PLUGIN_LIST" ]; then 
 	$WPCLI plugin install $WP_PLUGIN_LIST
+fi
+
+if [ -n "$WP_PLUGIN_LIST_ACTIVATE" ]; then 
+	$WPCLI plugin install $WP_PLUGIN_LIST --activate
 fi
 
 exit 0

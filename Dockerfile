@@ -100,7 +100,11 @@ COPY files/info.php _info/index.php
 
 # prepare continer to run: 
 USER www-data:www-data
-  # download Wordpress
-RUN wp core download --skip-content
+
+# Download Wordpress
+# if flag --skip-content is used, themes directory is not create leading 
+# to an error while instaling theme
+RUN wp core download --skip-content && mkdir -p ~/wp-content/themes
+
 
 CMD ["/entry.sh"]

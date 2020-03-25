@@ -20,11 +20,16 @@ docker run --name "My WP Instance" -e WP_PLUGIN_LIST="smart-grid-gallery core-si
 
 ### Wordpress settings
 
-#### WP_DEFAULT_THEME_NAME
+#### WP_THEME_LIST
+Space sepearted list of themes
 
-#### WP_LOCAL_THEME_NAME
+#### WP_THEME_ACTIVATE
+Name of the them to be activated
 
 #### WP_PLUGIN_LIST
+Space separated list of plugins for installation
+#### WP_PLUGIN_LIST_ACTIVATE
+Space separated list of plugins for installation and activation
 
 ### Site settings
 SITETITLE
