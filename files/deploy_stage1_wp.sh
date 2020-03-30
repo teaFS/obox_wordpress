@@ -1,14 +1,13 @@
 #!/bin/sh
 set -e
 
+#function validate_pluginname() {
+#	sed $1
+#}
 
 [ -f /var/www/theme/theme.env ] && \
 	. /var/www/theme/theme.env || \
 	echo "Using default theme settings"
-
-#ls /var/www/theme/theme.env && \
-#	. /var/www/theme/theme.env || \
-#	echo "Using default theme settings"
 
 
 if [ -z "$WPCLI" ]; then 
@@ -69,13 +68,13 @@ if [ -n "$TAGLINE" ]; then
 	$WPCLI option update blogdescription "$TAGLINE"
 fi
 
-#THEME_TO_ACTIVATE=""
 
 # Prepare and install theme
-if [ -n "$WP_THEME_LIST" ]; then
-	$WPCLI theme install $WP_THEME_LIST
+for p in $(echo $WP_THEME_LIST | sed 's/^\s*//;s/\s*$//;s/\s\s*/\n/g')
+do
+	$WPCLI theme install "$WP_THEME_LIST"
 	#THEME_TO_ACTIVATE="$THEME_NAME"
-fi
+done
 
 #if [ -n "$LOCAL_THEME_NAME" ]; then 
 #	ln -s /var/www/theme/src ./wp-content/themes/$LOCAL_THEME_NAME
@@ -83,16 +82,22 @@ fi
 #fi
 
 if [ -n "$WP_THEME_ACTIVATE" ]; then 
-	$WPCLI theme activate $WP_THEME_ACTIVATE
+	$WPCLI theme is-installed $WP_THEME_ACTIVATE || \
+		$WPCLI theme install $WP_THEME_ACTIVATE --activate && \
+		$($WPCLI theme is-active $WP_THEME_ACTIVATE || \
+			echo "Theme $WP_THEME_ACTIVATE is aready active" && \
+			$WPCLI theme activate $WP_THEME_ACTIVATE)
 fi
 
 # install plugins
-if [ -n "$WP_PLUGIN_LIST" ]; then 
-	$WPCLI plugin install $WP_PLUGIN_LIST
-fi
+for p in $(echo $WP_PLUGIN_LIST | sed 's/^\s*//;s/\s*$//;s/\s\s*/\n/g')
+do
+	$WPCLI plugin install $p
+done
 
-if [ -n "$WP_PLUGIN_LIST_ACTIVATE" ]; then 
-	$WPCLI plugin install $WP_PLUGIN_LIST --activate
-fi
+for p in $(echo $WP_PLUGIN_LIST_ACTIVATE | sed 's/^\s*//;s/\s*$//;s/\s\s*/\n/g')
+do
+	$WPCLI plugin install $p --activate
+done
 
 exit 0
