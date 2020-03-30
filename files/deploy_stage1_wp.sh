@@ -82,7 +82,7 @@ fi
 #	THEME_TO_ACTIVATE="$LOCAL_THEME_NAME"
 #fi
 
-if [ -n $WP_THEME_ACTIVATE ]; then 
+if [ -n "$WP_THEME_ACTIVATE" ]; then 
 	$WPCLI theme activate $WP_THEME_ACTIVATE
 fi
 

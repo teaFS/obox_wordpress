@@ -1,5 +1,6 @@
 #!/bin/sh
-set -xe
+[ $OBOX_DEBUG -ne 0 ] && set -xe || set -e
+
 
 # Set OBOX_MYSQL_HOST variable with: 
 # If $MYSQL_HOST is empty, default to "localhost" 
@@ -30,6 +31,10 @@ LAUNCH_SCHEMA=$([ -e "./wp-config.php" ] && echo 'r' || echo 'f')
 
 # If database is set to be local, install necessary packeges
 if [ $MYSQL_HOST_STATUS -eq '0' ] && [ $LAUNCH_SCHEMA == 'f' ]; then 
+	# install mariadb, but before call "apk upgrade" to ensure 
+	# database setup in the case when this script is launched on 
+	# outdated container
+	sudo apk upgrade
 	sudo apk add --no-cache mariadb
 
 	# set random root password
