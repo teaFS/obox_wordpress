@@ -72,7 +72,7 @@ fi
 # Prepare and install theme
 for p in $(echo $WP_THEME_LIST | sed 's/^\s*//;s/\s*$//;s/\s\s*/\n/g')
 do
-	$WPCLI theme install "$WP_THEME_LIST"
+	$WPCLI theme install $p
 	#THEME_TO_ACTIVATE="$THEME_NAME"
 done
 
@@ -83,10 +83,11 @@ done
 
 if [ -n "$WP_THEME_ACTIVATE" ]; then 
 	$WPCLI theme is-installed $WP_THEME_ACTIVATE || \
-		$WPCLI theme install $WP_THEME_ACTIVATE --activate && \
-		$($WPCLI theme is-active $WP_THEME_ACTIVATE || \
-			echo "Theme $WP_THEME_ACTIVATE is aready active" && \
-			$WPCLI theme activate $WP_THEME_ACTIVATE)
+		$WPCLI theme install $WP_THEME_ACTIVATE
+	
+	$WPCLI theme is-active $WP_THEME_ACTIVATE || \
+		echo "Theme $WP_THEME_ACTIVATE is aready active" && \
+		$WPCLI theme activate $WP_THEME_ACTIVATE
 fi
 
 # install plugins
