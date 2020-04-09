@@ -16,4 +16,29 @@ function dump() {
     $WPCLI plugin list --format=yaml
 }
 
-dump
+function resetpwd() {
+    echo "************************* ..."
+    echo "* Login credentials: "
+    for LOGIN in $(wp user list --role=administrator --field=login | sort)
+    do
+	    LOGIN_PASS=$(dd if=/dev/urandom status=none bs=1024 count=1 | md5sum | cut -c -8)
+
+	    wp user update $LOGIN --user_pass=$LOGIN_PASS --skip-email
+	    echo "$LOGIN/$LOGIN_PASS"
+    done
+    echo "************************* ..."
+}
+
+case "$1" in 
+  dump)
+    dump
+  ;;
+
+  resetpwd)
+    resetpwd
+  ;;
+
+  *)
+    echo "Usage: config.sh {dump|load <config>.yml|resetpwd}"
+  ;;
+esac

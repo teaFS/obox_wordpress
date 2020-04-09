@@ -10,30 +10,34 @@ The Obox_wordpress has been developed to automatize Wordpress deployment. It is 
 ## Quick Wordpress setup
 Launching empty Wordpress: 
 ```
-docker run --name "My WP Instance" -d entrproc/obox_wordpress
+docker run --name "WP_play" -d entrproc/obox_wordpress
 ```
 Let's introduce some fun: 
 ```
-docker run --name "My WP Instance" -e WP_PLUGIN_LIST="smart-grid-gallery core-sitemaps" entrproc/obox_wordpress
+docker run --name "WP_withfun" -e WP_THEME_ACTIVATE="newsup" -e WP_PLUGIN_LIST="smart-grid-gallery core-sitemaps" -e SITETITLE="WP with fun" entrproc/obox_wordpress
 ```
+Prepare installation with database in separated continer: 
+
 
 
 ### Wordpress settings
 
 #### WP_THEME_LIST
-Space sepearted list of themes
+Space sepearted list of themes for installation
 
 #### WP_THEME_ACTIVATE
-Name of the them to be activated
+Name of the theme for activation, and installation if not listed in 'WP_THEME_LIST'
 
 #### WP_PLUGIN_LIST
 Space separated list of plugins for installation
 #### WP_PLUGIN_LIST_ACTIVATE
-Space separated list of plugins for installation and activation
+Space separated list of plugins for activation and installation if not listed in 'WP_PLUGIN_LIST'
 
 ### Site settings
-SITETITLE
-TAGLINE
+#### SITETITLE
+Blog's site title
+#### TAGLINE
+Blog's description
 
 ### Database settings
 
@@ -49,9 +53,6 @@ Passowrd for given user name
 
 #### DB_NAME
 Name of the MySQL database to be used by Wordpres setup
-
-
-
 
 ### build arguments
 WPCLI_DOWNLOAD_URL
