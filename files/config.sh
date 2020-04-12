@@ -16,6 +16,10 @@ function dump() {
     $WPCLI plugin list --format=yaml
 }
 
+function load() {
+
+}
+
 function resetpwd() {
     echo "************************* ..."
     echo "* Login credentials: "
@@ -39,6 +43,10 @@ case "$1" in
   ;;
 
   *)
-    echo "Usage: config.sh {dump|load <config>.yml|resetpwd}"
+    echo "Usage: config.sh {dump <file name>|load <config>.yml|resetpwd}"
+    echo ""
+    echo ""
   ;;
 esac
+
+exit 0

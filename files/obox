@@ -1,0 +1,3 @@
+# Set enviromental variables for running OBOX scripts
+
+PATH=$PATH:/opt/obox

@@ -9,7 +9,6 @@ ENV HTTP_EXP_ADDR "0.0.0.0:"$HTTP_EXP_PORT
 
 ENV OBOX_LOCAL_DB_DATA_PATH "/database"
 
-EXPOSE $HTTP_EXP_PORT/tcp
 
 ENV SITETITLE "Obox_wordpress setup"
 ENV OBOX_DEBUG 1
@@ -75,6 +74,9 @@ RUN docker-php-ext-install mysqli pdo_mysql
 
 ADD --chown=root:root files/sudo_* /etc/sudoers.d/
 
+ADD --chown=root:root files/obox /etc/profile.d/obox
+RUN chmod +x /etc/profile.d/obox
+
 # issue with: 
 # >>> /etc/sudoers.d/sudo_finalize_setup: syntax error near line 1 <<<
 # sudo: parse error in /etc/sudoers.d/sudo_finalize_setup near line 1
@@ -106,5 +108,7 @@ USER www-data:www-data
 # to an error while instaling theme
 RUN wp core download --skip-content && mkdir -p ~/wp-content/themes
 
+
+EXPOSE $HTTP_EXP_PORT/tcp
 
 CMD ["/entry.sh"]
