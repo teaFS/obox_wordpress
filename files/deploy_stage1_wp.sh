@@ -5,11 +5,6 @@ set -e
 #	sed $1
 #}
 
-[ -f /var/www/theme/theme.env ] && \
-	. /var/www/theme/theme.env || \
-	echo "Using default theme settings"
-
-
 if [ -z "$WPCLI" ]; then 
 	WPCLI=echo
 fi
@@ -32,21 +27,29 @@ else
 	URL="http://$DOMAIN:$HTTP_EXP_PORT/$APP_PATH"
 fi
 
-# checkout if theme is ready to setup
-#if [ -z "$WP_THEME_NAME" ]; then 
-#	(>&2 echo "Enviroment variable PARENT_THEME_NAME is not set, while required")
-#	MISSING_ENV=1
-#fi
+# Test variables for source theme configuration
+if [ -f /var/www/theme/theme.env ]; then 
+	# load configuration for custom theme
+	. /var/www/theme/theme.env
+	echo "Using source theme"
 
-#if [ -z "$WP_CHILD_THEME_NAME" ]; then 
-#	(>&2 echo "Enviroment variable CHILD_THEME_NAME is not set, while required")
-#	MISSING_ENV=1
-#fi
+	# checkout if theme is ready to setup
+	if [ -z "$THEME_NAME" ]; then 
+		(>&2 echo "Enviroment variable THEME_NAME is not set, while required")
+		MISSING_ENV=1
+	fi
 
-#if [ -z "$WP_PLUGIN_LIST" ]; then 
-#	(>&2 echo "Enviroment variable WP_PLUGIN_LIST is not set, while required")
-#	MISSING_ENV=1
-#fi
+	if [ -z "$TEMPL_NAME" ]; then 
+		(>&2 echo "Enviroment variable TEMPL_NAME is not set, while required")
+		MISSING_ENV=1
+	fi
+fi
+
+# ensure that WP_PLUGIN_LIST variable is set
+if [ -z "$WP_PLUGIN_LIST" ]; then 
+	(>&2 echo "Enviroment variable WP_PLUGIN_LIST is not set, while required")
+	MISSING_ENV=1
+fi
 
 # don't deploy if any required enviromental value is missing
 if [ $MISSING_ENV -ne 0 ]; then
@@ -68,29 +71,29 @@ if [ -n "$TAGLINE" ]; then
 	$WPCLI option update blogdescription "$TAGLINE"
 fi
 
-
-# Prepare and install theme
-for p in $(echo $WP_THEME_LIST | sed 's/^\s*//;s/\s*$//;s/\s\s*/\n/g')
+# Insatll and activate theme
+for p in $(echo $WP_THEME_LIST $THEME_NAME | sed 's/^\s*//;s/\s*$//;s/\s\s*/\n/g')
 do
 	$WPCLI theme install $p
 	#THEME_TO_ACTIVATE="$THEME_NAME"
 done
 
-#if [ -n "$LOCAL_THEME_NAME" ]; then 
-#	ln -s /var/www/theme/src ./wp-content/themes/$LOCAL_THEME_NAME
-#	THEME_TO_ACTIVATE="$LOCAL_THEME_NAME"
-#fi
-
-if [ -n "$WP_THEME_ACTIVATE" ]; then 
-	$WPCLI theme is-installed $WP_THEME_ACTIVATE || \
-		$WPCLI theme install $WP_THEME_ACTIVATE
-	
-	$WPCLI theme is-active $WP_THEME_ACTIVATE || \
-		echo "Theme $WP_THEME_ACTIVATE is aready active" && \
-		$WPCLI theme activate $WP_THEME_ACTIVATE
+# If theme's source is set, make this very theme as an active
+if [ -n "$THEME_NAME" ]; then 
+	ln -s /var/www/theme/src ./wp-content/themes/$CHILD_THEME_NAME
+	THEME_TO_ACTIVATE="$CHILD_THEME_NAME"
 fi
 
-# install plugins
+if [ -n "$THEME_TO_ACTIVATE" ]; then 
+	$WPCLI theme is-installed $THEME_TO_ACTIVATE || \
+		$WPCLI theme install $THEME_TO_ACTIVATE
+	
+	$WPCLI theme is-active $THEME_TO_ACTIVATE || \
+		echo "Theme $THEME_TO_ACTIVATE is aready active" && \
+		$WPCLI theme activate $THEME_TO_ACTIVATE
+fi
+
+# install and activate plugins
 for p in $(echo $WP_PLUGIN_LIST | sed 's/^\s*//;s/\s*$//;s/\s\s*/\n/g')
 do
 	$WPCLI plugin install $p

@@ -37,6 +37,11 @@ if [ $MYSQL_HOST_STATUS -eq '0' ] && [ $LAUNCH_SCHEMA == 'f' ]; then
 	sudo apk upgrade
 	sudo apk add --no-cache mariadb
 
+	if [ -n "$MYSQL_ROOT_PASS" ]; then 
+	
+	else
+
+	fi
 	# set random root password
 	DB_ROOT_PASS=$(dd if=/dev/urandom status=none bs=1024 count=1 | md5sum | cut -c -16)
 	DB_PASS=""

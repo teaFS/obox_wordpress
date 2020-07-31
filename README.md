@@ -39,7 +39,11 @@ TAGLINE
 
 #### MYSQL_HOST
 If MYSQL_HOST variable is not set, or set to indicate localhost, Wordpress will be configured for using local (in the same container) MySQL database.
-In order to use an external databse, MYSQL_HOST should indicate accesible host, 
+In order to use an external database, MYSQL_HOST should indicate network 
+accessible host.
+
+#### MYSQL_ROOT_PASS
+Set database root password, if container uses local database (indicated by MYSQL_HOST) and this variable is skipped, a random password will be generated. Otherwise, docker's container will use given value.
 
 #### DB_USER
 Database user name if not set default 'mysql' is used
@@ -48,12 +52,38 @@ Database user name if not set default 'mysql' is used
 Passowrd for given user name
 
 #### DB_NAME
-Name of the MySQL database to be used by Wordpres setup
-
-
+Name of the MySQL database to be used by Wordpres setup, if omitted 'wp' is set.
 
 
 ### build arguments
 WPCLI_DOWNLOAD_URL
 http://bestlocalnetwork/ires/wp-cli.org/wp-cli.phar
+
+
+## System variables
+
+### WP database settings
+
+
+
+database is set to localhost, database will be set
+# WP settings
+SITETITLE=
+TAGLINE=
+
+ADMIN_USER=
+ADMIN_EMAIL=
+
+if theme.env
+THEME_NAME=""
+TEMPL_NAME=""
+
+
+Host settings: 
+HOST_PORT=8080
+
+
+# Wordpress settings
+THEME_PATH=../wp-themes/datmar_www
+
 
