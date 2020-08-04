@@ -50,18 +50,16 @@ accessible host.
 Set database root password, if container uses local database (indicated by MYSQL_HOST) and this variable is skipped, a random password will be generated. Otherwise, docker's container will use given value.
 
 #### DB_USER
-Database user name if not set default 'mysql' is used
+Database user name if not set default 'www-data' is used
 
 #### DB_PASS
-Passowrd for given user name
+Passowrd for given user name, if not set random password is generated
 
 #### DB_NAME
-<<<<<<< HEAD
 Name of the MySQL database to be used by Wordpres setup, if omitted 'wp' is set.
 
 =======
-Name of the MySQL database to be used by Wordpres setup
->>>>>>> 1e25a6e8846c0e4d2f2bf324812b793214371931
+
 
 ### build arguments
 WPCLI_DOWNLOAD_URL

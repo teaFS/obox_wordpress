@@ -15,8 +15,8 @@ DOMAIN="localhost"
 APP_PATH=""
 URL=""
 
-ADMIN_USER="admin"
-ADMIN_EMAIL="admin@example.com"
+ADMIN_USER=""
+ADMIN_EMAIL=""
 
 MISSING_ENV=0
 
@@ -72,16 +72,16 @@ if [ -n "$TAGLINE" ]; then
 fi
 
 # Insatll and activate theme
-for p in $(echo $WP_THEME_LIST $THEME_NAME | sed 's/^\s*//;s/\s*$//;s/\s\s*/\n/g')
+for p in $(echo $WP_THEME_LIST $TEMPL_NAME | sed 's/^\s*//;s/\s*$//;s/\s\s*/\n/g')
 do
 	$WPCLI theme install $p
-	#THEME_TO_ACTIVATE="$THEME_NAME"
 done
 
 # If theme's source is set, make this very theme as an active
 if [ -n "$THEME_NAME" ]; then 
-	ln -s /var/www/theme/src ./wp-content/themes/$CHILD_THEME_NAME
-	THEME_TO_ACTIVATE="$CHILD_THEME_NAME"
+	mkdir -p ./wp-content/themes
+	ln -s /var/www/theme/src ./wp-content/themes/$THEME_NAME
+	THEME_TO_ACTIVATE=$THEME_NAME
 fi
 
 if [ -n "$THEME_TO_ACTIVATE" ]; then 
@@ -104,4 +104,14 @@ do
 	$WPCLI plugin install $p --activate
 done
 
+### setup upload_path
+#wp media import $(find ~/data/datmar/uploads/ -type f | egrep -v "\-[0-9]+x[0-9]+.[a-Z]+")
+#wp option get upload_path
+#media
+
+#wp option get upload_url_path
+#https://example.com/media
+
+
 exit 0
+

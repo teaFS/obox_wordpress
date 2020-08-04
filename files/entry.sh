@@ -1,6 +1,14 @@
 #!/bin/sh
 [ $OBOX_DEBUG -ne 0 ] && set -xe || set -e
 
+function set_dbrootcredentials() {
+	if [ -n "$MYSQL_ROOT_PASS" ]; then 
+		DB_ROOT_PASS="$MYSQL_ROOT_PASS"
+	else
+		# set random root password
+		DB_ROOT_PASS=$(dd if=/dev/urandom status=none bs=1024 count=1 | md5sum | cut -c -16)
+	fi
+}
 
 # Set OBOX_MYSQL_HOST variable with: 
 # If $MYSQL_HOST is empty, default to "localhost" 
@@ -37,14 +45,8 @@ if [ $MYSQL_HOST_STATUS -eq '0' ] && [ $LAUNCH_SCHEMA == 'f' ]; then
 	sudo apk upgrade
 	sudo apk add --no-cache mariadb
 
-	if [ -n "$MYSQL_ROOT_PASS" ]; then 
-	
-	else
+	set_dbrootcredentials
 
-	fi
-	# set random root password
-	DB_ROOT_PASS=$(dd if=/dev/urandom status=none bs=1024 count=1 | md5sum | cut -c -16)
-	DB_PASS=""
 
 	# this is local mysql instance accesiable over UNIX socket only
 	OBOX_MYSQL_PORT="/run/mysqld/mysqld.sock"
@@ -105,19 +107,24 @@ echo "DB connection tested"
 if [ $LAUNCH_SCHEMA == 'f' ]; then 
 	echo "Setting up obox_wordpress ..."
 
-	DB_USER=$(id -un)
-	DB_USER_PASS=$(dd if=/dev/urandom status=none bs=1024 count=1 | md5sum | cut -c -12)
-
 	# Create MySQL database for wordpress
 	# if database name is not provided, set default value
 	[ -z $DB_NAME ] && DB_NAME='wp' || true;
 
+	[ -z "$DB_USER" ] && DB_USER=$(id -un) || true;
+
+	if [ -z "$DB_PASS" ]; then
+		DB_USER_PASS=$(dd if=/dev/urandom status=none bs=1024 count=1 | md5sum | cut -c -12)
+	else 
+		DB_USER_PASS="$DB_PASS"
+	fi
+
 	echo "Creating database: "
 	
-    echo 	"CREATE DATABASE $DB_NAME;" \
-			"CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$DB_USER_PASS';" \
-			"GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost';" \
-			"FLUSH PRIVILEGES;" | sudo mysql
+	echo 	"CREATE DATABASE $DB_NAME;" \
+		"CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$DB_USER_PASS';" \
+		"GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost';" \
+		"FLUSH PRIVILEGES;" | sudo mysql
 
 	echo "Deploying Wordpress"
 	
