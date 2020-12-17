@@ -16,9 +16,10 @@ APP_PATH=""
 URL=""
 
 ADMIN_USER=""
-ADMIN_EMAIL=""
+ADMIN_EMAIL="admin@example.com"
 
 MISSING_ENV=0
+INVALID_ENV=0
 
 if [ -z "$DOMAIN" ]; then 
 	(>&2 echo "Enviroment variable DOMAIN is not set, while required") 
@@ -46,14 +47,18 @@ if [ -f /var/www/theme/theme.env ]; then
 fi
 
 # ensure that WP_PLUGIN_LIST variable is set
-if [ -z "$WP_PLUGIN_LIST" ]; then 
-	(>&2 echo "Enviroment variable WP_PLUGIN_LIST is not set, while required")
-	MISSING_ENV=1
+if ! echo "$WP_PLUGIN_LIST" | grep -e '^[A-Za-z0-9|\-|\ ]*$' ; then 
+	(>&2 echo "Enviroment variable WP_PLUGIN_LIST is not valid")
+	INVALID_ENV=1
 fi
 
 # don't deploy if any required enviromental value is missing
 if [ $MISSING_ENV -ne 0 ]; then
 	exit 1
+fi
+
+if [ $INVALID_ENV -ne 0 ]; then
+	exit 2
 fi
 
 echo "Setting up: $URL"
