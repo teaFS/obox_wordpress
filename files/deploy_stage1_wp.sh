@@ -10,13 +10,28 @@ if [ -z "$WPCLI" ]; then
 fi
 
 echo "WPCLI set to call '$WPCLI'"
+echo "Hostname is: $HOSTNAME"
 
 DOMAIN="localhost"
 APP_PATH=""
 URL=""
 
-ADMIN_USER=""
-ADMIN_EMAIL="admin@example.com"
+if [ -z "$ADMIN_USER" ]; then 
+	ADMIN_USER="admin"
+	echo "Setting default admin user name: $ADMIN_USER"
+else
+	$(echo "$ADMIN_USER" | egrep -v "^[A-Za-z0-9]+$" > /dev/null) && \ 
+				echo "Not allowed admin name"; exit 1;
+fi
+
+# Wordpress exits with error if given e-mail 
+# adress does not provide TLD, eg. myhost 
+# is not allowed
+# but it accepts IP addresses, for development 
+# local mail dummy server is perfect, 
+# therefore 127.0.0.1 is given instead of 
+# 'localhost'
+ADMIN_EMAIL="$ADMIN_USER@127.0.0.1"
 
 MISSING_ENV=0
 INVALID_ENV=0
@@ -47,7 +62,7 @@ if [ -f /var/www/theme/theme.env ]; then
 fi
 
 # ensure that WP_PLUGIN_LIST variable is set
-if ! echo "$WP_PLUGIN_LIST" | grep -e '^[A-Za-z0-9|\-|\ ]*$' ; then 
+if ! echo "$WP_PLUGIN_LIST" | grep -E '^([A-Za-z0-9]|\-|\ )*$' > /dev/null ; then 
 	(>&2 echo "Enviroment variable WP_PLUGIN_LIST is not valid")
 	INVALID_ENV=1
 fi

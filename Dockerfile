@@ -67,6 +67,8 @@ RUN apk add --no-cache $DEV0_PCKGS && \
 # container are installed, othervise development tools are deleted
     [ $OBOX_DEBUG -ne 1 ] && apk del $DEV0_PCKGS || apk add --no-cache $HELP_PCKGS
 
+# install mariadb for the case of local db use
+RUN apk add --no-cache mariadb
 
 # install packeges requied for connecting to database
 RUN docker-php-ext-install mysqli pdo_mysql

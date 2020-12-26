@@ -35,7 +35,7 @@ Space separated list of a plugins for installation
 Space separated list of plugins for activation - if a given plugin has not been listed in 'WP_PLUGIN_LIST', script will attempt to install and activate it
 
 #### ADMIN_USER
-#### ADMIN_EMAIL
+
 
 ### Site settings variables
 Environment variables associated with site and SEO
